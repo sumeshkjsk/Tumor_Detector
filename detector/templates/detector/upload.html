@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Brain Tumor Detection</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
     }
-
     body {
       font-family: 'Inter', sans-serif;
       background: #f0f4f8;
@@ -19,8 +19,9 @@
       align-items: center;
       min-height: 100vh;
       padding: 2rem;
+      color: #333;
+      line-height: 1.6;
     }
-
     .container {
       display: flex;
       flex-direction: row;
@@ -30,27 +31,24 @@
       overflow: hidden;
       width: 95%;
       max-width: 1000px;
+      min-height: 600px;
     }
-
     .left, .right {
       flex: 1;
       padding: 2rem 2.5rem;
+      display: flex;
+      flex-direction: column;
     }
-
     .left {
       background: #f9fafc;
       border-right: 1px solid #e0e0e0;
     }
-
     .right {
       text-align: center;
       background: #ffffff;
-      display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
     }
-
     h2 {
       font-size: 1.7rem;
       font-weight: 600;
@@ -58,35 +56,35 @@
       margin-bottom: 1.8rem;
       text-align: center;
     }
-
-    input[type="file"] {
-      display: none;
+    input[type="file"] { 
+      display: none; 
     }
-
     .custom-file-upload {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       border: 2px dashed #ccc;
       border-radius: 12px;
-      padding: 1.25rem;
+      padding: 2rem;
       text-align: center;
       cursor: pointer;
       transition: all 0.3s ease;
       background: #fff;
       margin-bottom: 1rem;
+      min-height: 150px;
     }
-
     .custom-file-upload:hover {
       border-color: #999;
       background-color: #f1f5f9;
     }
-
     .file-name {
       font-size: 0.95rem;
       color: #555;
       margin-bottom: 1.5rem;
       text-align: center;
+      word-break: break-word;
     }
-
     button {
       background: linear-gradient(to right, #6a11cb, #2575fc);
       color: white;
@@ -96,91 +94,247 @@
       border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
-      transition: background 0.3s ease;
+      transition: all 0.3s ease;
       width: 100%;
       margin-top: 0.5rem;
     }
-
     button:hover {
       background: linear-gradient(to right, #5f0db2, #1a5ae0);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
-
+    button:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .preview-container {
+      width: 100%;
+      max-width: 350px;
+      margin: 0 auto;
+    }
+    .preview {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
     .preview img {
       max-width: 100%;
+      max-height: 300px;
       height: auto;
       border-radius: 14px;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-      margin-bottom: 1rem;
+      border: 1px solid #eee;
+      object-fit: contain;
     }
-
+    .result-container {
+      width: 100%;
+      margin-top: 1.5rem;
+    }
     .result {
       font-size: 1.15rem;
       font-weight: 600;
-      padding: 0.75rem 1.25rem;
+      padding: 1rem;
       border-radius: 10px;
-      margin-top: 1rem;
+      margin: 0.5rem 0;
+      text-align: center;
     }
-
-    .tumor {
+    .confidence {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 0.5rem;
+      font-weight: 500;
+    }
+    .tumor { 
+      background-color: #ffebee; 
+      color: #c62828; 
+      border-left: 4px solid #c62828;
+    }
+    .no-tumor { 
+      background-color: #e8f5e9; 
+      color: #2e7d32; 
+      border-left: 4px solid #2e7d32;
+    }
+    .invalid { 
+      background-color: #fff8e1; 
+      color: #ff6f00; 
+      border-left: 4px solid #ff6f00;
+    }
+    .loading {
+      display: none;
+      margin: 1rem 0;
+      text-align: center;
+    }
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top: 4px solid #2575fc;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .messages {
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .message {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+    .error {
       background-color: #ffebee;
       color: #c62828;
+      border-left: 4px solid #c62828;
     }
-
-    .no-tumor {
+    .success {
       background-color: #e8f5e9;
       color: #2e7d32;
+      border-left: 4px solid #2e7d32;
     }
-
+    .info {
+      background-color: #e3f2fd;
+      color: #1565c0;
+      border-left: 4px solid #1565c0;
+    }
+    .requirements {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 1.5rem;
+      text-align: left;
+      padding: 1rem;
+      background: #f5f5f5;
+      border-radius: 8px;
+      border-left: 4px solid #2575fc;
+    }
+    .requirements ul {
+      padding-left: 1.2rem;
+      margin-top: 0.5rem;
+    }
+    .requirements li {
+      margin-bottom: 0.5rem;
+    }
+    .file-info {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 1rem;
+      text-align: center;
+    }
     @media screen and (max-width: 768px) {
-      .container {
-        flex-direction: column;
+      .container { 
+        flex-direction: column; 
+        min-height: auto;
       }
-
-      .left {
-        border-right: none;
-        border-bottom: 1px solid #e0e0e0;
+      .left { 
+        border-right: none; 
+        border-bottom: 1px solid #e0e0e0; 
       }
-
-      .left, .right {
-        padding: 1.5rem;
+      .left, .right { 
+        padding: 1.5rem; 
+      }
+      h2 {
+        font-size: 1.5rem;
       }
     }
   </style>
 </head>
 <body>
-
 <div class="container">
   <!-- Upload Section -->
   <div class="left">
-    <h2>🧠 Upload MRI Scan</h2>
-    <form method="POST" enctype="multipart/form-data">
+    <h2>🧠 Brain Tumor Detection</h2>
+    
+    <!-- Messages -->
+    <div class="messages">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" id="upload-form">
       {% csrf_token %}
-
       <label for="file-upload" class="custom-file-upload">
-        <span id="file-label">📁 Choose MRI Image</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2575fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        <span id="file-label">Click to upload MRI scan</span>
       </label>
-      <input id="file-upload" type="file" name="image" accept="image/*" onchange="previewImage(event)" required>
-
+      <input id="file-upload" type="file" name="image" accept="image/jpeg, image/png, image/bmp, image/dcm" onchange="previewImage(event)" required>
       <div class="file-name" id="file-name">No file chosen</div>
-
-      <button type="submit">Check Tumor</button>
+      
+      <div class="requirements">
+        <strong>Image Requirements:</strong>
+        <ul>
+          <li>Formats: JPEG, PNG, BMP, DICOM</li>
+          <li>Max size: 10MB</li>
+          <li>Minimum resolution: 224×224 pixels</li>
+          <li>Clear brain MRI scan</li>
+          <li>Grayscale images work best</li>
+        </ul>
+      </div>
+      
+      <button type="submit" id="submit-btn" disabled>Analyze MRI Scan</button>
     </form>
   </div>
 
   <!-- Preview & Result Section -->
   <div class="right">
-    <h2>📷 Preview & Result</h2>
-    <div class="preview" id="preview">
-      {% if image_url %}
-        <img src="{{ image_url }}" alt="Uploaded Image">
-      {% endif %}
-    </div>
-
-    {% if prediction %}
-      <div class="result {% if 'no tumor' in prediction|lower %}no-tumor{% else %}tumor{% endif %}">
-        🧾 Result: {{ prediction }}
+    <h2>📷 Results</h2>
+    
+    <div class="preview-container">
+      <div class="preview" id="preview">
+        {% if image_base64 %}
+          <img src="data:image/png;base64,{{ image_base64 }}" alt="Analyzed MRI Image">
+        {% else %}
+          <img src="https://via.placeholder.com/350x350?text=Upload+MRI+Scan" alt="MRI Preview" style="opacity: 0.5;">
+        {% endif %}
       </div>
-    {% endif %}
+      
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Analyzing image...</p>
+      </div>
+      
+      <div class="result-container">
+        {% if prediction_result %}
+          <div class="result
+            {% if 'no tumor' in prediction_result|lower %}
+              no-tumor
+            {% elif 'tumor detected' in prediction_result|lower %}
+              tumor
+            {% elif 'rejected' in prediction_result|lower or 'invalid' in prediction_result|lower %}
+              invalid
+            {% else %}
+              invalid
+            {% endif %}">
+            🧾 Result: {{ prediction_result }}
+            {% if prediction_confidence and prediction_confidence > 0 %}
+              <div class="confidence">Confidence: {{ prediction_confidence }}%</div>
+            {% endif %}
+          </div>
+          
+          {% if filename %}
+            <div class="file-info">
+              File: {{ filename }}
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
   </div>
 </div>
 
@@ -189,17 +343,38 @@
     const file = event.target.files[0];
     const preview = document.getElementById('preview');
     const fileName = document.getElementById('file-name');
+    const submitBtn = document.getElementById('submit-btn');
+    const fileLabel = document.getElementById('file-label');
 
     if (file) {
       fileName.textContent = file.name;
       preview.innerHTML = '';
       const img = document.createElement('img');
       img.src = URL.createObjectURL(file);
-      img.alt = 'Uploaded Preview';
+      img.alt = 'Uploaded MRI Preview';
       preview.appendChild(img);
+      fileLabel.textContent = 'Change file';
+      submitBtn.disabled = false;
+    } else {
+      fileName.textContent = 'No file chosen';
+      fileLabel.textContent = 'Click to upload MRI scan';
+      submitBtn.disabled = true;
     }
   }
-</script>
 
+  document.getElementById('upload-form').addEventListener('submit', function() {
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('submit-btn').disabled = true;
+    document.getElementById('submit-btn').textContent = 'Processing...';
+  });
+
+  window.onload = function() {
+    {% if filename %}
+      document.getElementById('file-name').textContent = '{{ filename }}';
+      document.getElementById('file-label').textContent = 'Change file';
+      document.getElementById('submit-btn').disabled = false;
+    {% endif %}
+  };
+</script>
 </body>
 </html>
