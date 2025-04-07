@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Brain Tumor Detection</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: row;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      width: 95%;
+      max-width: 1000px;
+    }
+
+    .left, .right {
+      flex: 1;
+      padding: 2rem 2.5rem;
+    }
+
+    .left {
+      background: #f9fafc;
+      border-right: 1px solid #e0e0e0;
+    }
+
+    .right {
+      text-align: center;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    h2 {
+      font-size: 1.7rem;
+      font-weight: 600;
+      color: #222;
+      margin-bottom: 1.8rem;
+      text-align: center;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .custom-file-upload {
+      display: block;
+      border: 2px dashed #ccc;
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #fff;
+      margin-bottom: 1rem;
+    }
+
+    .custom-file-upload:hover {
+      border-color: #999;
+      background-color: #f1f5f9;
+    }
+
+    .file-name {
+      font-size: 0.95rem;
+      color: #555;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    button {
+      background: linear-gradient(to right, #6a11cb, #2575fc);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.2rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s ease;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #5f0db2, #1a5ae0);
+    }
+
+    .preview img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 14px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1rem;
+    }
+
+    .result {
+      font-size: 1.15rem;
+      font-weight: 600;
+      padding: 0.75rem 1.25rem;
+      border-radius: 10px;
+      margin-top: 1rem;
+    }
+
+    .tumor {
+      background-color: #ffebee;
+      color: #c62828;
+    }
+
+    .no-tumor {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    @media screen and (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .left {
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .left, .right {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Upload Section -->
+  <div class="left">
+    <h2>🧠 Upload MRI Scan</h2>
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <label for="file-upload" class="custom-file-upload">
+        <span id="file-label">📁 Choose MRI Image</span>
+      </label>
+      <input id="file-upload" type="file" name="image" accept="image/*" onchange="previewImage(event)" required>
+
+      <div class="file-name" id="file-name">No file chosen</div>
+
+      <button type="submit">Check Tumor</button>
+    </form>
+  </div>
+
+  <!-- Preview & Result Section -->
+  <div class="right">
+    <h2>📷 Preview & Result</h2>
+    <div class="preview" id="preview">
+      {% if image_url %}
+        <img src="{{ image_url }}" alt="Uploaded Image">
+      {% endif %}
+    </div>
+
+    {% if prediction %}
+      <div class="result {% if 'no tumor' in prediction|lower %}no-tumor{% else %}tumor{% endif %}">
+        🧾 Result: {{ prediction }}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  function previewImage(event) {
+    const file = event.target.files[0];
+    const preview = document.getElementById('preview');
+    const fileName = document.getElementById('file-name');
+
+    if (file) {
+      fileName.textContent = file.name;
+      preview.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      img.alt = 'Uploaded Preview';
+      preview.appendChild(img);
+    }
+  }
+</script>
+
+</body>
+</html>
